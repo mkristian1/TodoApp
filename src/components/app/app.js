@@ -135,7 +135,6 @@ export default class App extends Component {
 
 	const filterData = this.searchFilter(todoData, searchValue);
 
-
 	return(
 	<div className="todo-app">
 		<AppHeader theList = {todoCount} done = {doneCount}/>
