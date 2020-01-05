@@ -17,7 +17,8 @@ export default class App extends Component {
 	this.createTodoTask('Create react app'),
 	this.createTodoTask('Sleep')
 	],
-	searchValue: ''
+	searchValue: '',
+	status: 'all'
 	};
 
 	createTodoTask(label) {
@@ -81,33 +82,7 @@ export default class App extends Component {
 		});
 	};
 
-	allStatusFilter = () => {
-		this.setState(({ todoData }) => {
-			return {
-				todoData: todoData
-			}
-		});
-	};
-
-	activeStatusFilter = () => {
-		this.setState(({ todoData }) => {
-			const newArr = todoData.filter(el => el.done === false);
 	
-			return {
-				todoData: newArr
-			};
-		});
-	};
-
-	doneStatusFilter = () => {
-		this.setState(({ todoData }) => {
-			const newArr = todoData.filter(el => el.done === true);
-	
-			return {
-				todoData: newArr
-			};
-		});
-	};
 
 	searchItem = (text) => {
 		
@@ -117,32 +92,50 @@ export default class App extends Component {
 	};
 
 	searchFilter = (data, search) => {
-		if (!search) {
-		return data;
-		}
+		if (search) {
 		return data.filter(
 				item => item.label.toLowerCase().indexOf(search) !== -1);
+		} 
+		return data;		
+		};
 
+	statusFilter(data, status) {
+		switch(status) {
+			case 'all':
+				return data;
+			case 'active':
+				return  data.filter(item => !item.done);
+			case 'done':
+				return  data.filter(item => item.done);
+			default:
+				return data;
+		}
 	}
 
+	onStatus = (currentStatus) => {
+		
+		this.setState({
+			status: currentStatus
+		});
+	};	
 
 	render() {
 
-	const {todoData, searchValue} = this.state; 
+	const {todoData, searchValue, status} = this.state; 
 	
 	const doneCount = todoData.filter((el) => el.done).length;	
 	const todoCount = todoData.length - doneCount;
 
-	const filterData = this.searchFilter(todoData, searchValue);
+	const filterData = this.statusFilter(this.searchFilter(todoData, searchValue), status);
 
 	return(
 	<div className="todo-app">
 		<AppHeader theList = {todoCount} done = {doneCount}/>
 		<Search searchItem = {this.searchItem} />
 		<ItemStatusFilter
-		onActiveElement = {this.activeStatusFilter}
-		onAllElement = {this.allStatusFilter}
-		onDoneElement = {this.doneStatusFilter}
+		onStatus = { this.onStatus }
+		status = {status}
+		
 		 />
 		<TodoList 
 		todos = { filterData  } 
